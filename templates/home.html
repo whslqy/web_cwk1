@@ -3,27 +3,205 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Book API Home</title>
+    <title>Book API Portal</title>
     <style>
-        body { font-family: Arial, sans-serif; margin: 2rem; background: #f4f7fb; color: #1d2733; }
-        .container { max-width: 800px; margin: auto; padding: 2rem; background: white; border-radius: 12px; box-shadow: 0 10px 30px rgba(0,0,0,.08); }
-        h1 { margin-top: 0; }
-        a { color: #1d70b8; text-decoration: none; }
+        :root {
+            --ink: #152033;
+            --muted: #5b6878;
+            --panel: rgba(255, 255, 255, 0.92);
+            --edge: rgba(21, 32, 51, 0.08);
+            --accent: #0f766e;
+            --accent-soft: #d7f7ef;
+            --bg-a: #ecfdf5;
+            --bg-b: #eff6ff;
+        }
+
+        * { box-sizing: border-box; }
+
+        body {
+            margin: 0;
+            min-height: 100vh;
+            font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+            color: var(--ink);
+            background:
+                radial-gradient(circle at top left, rgba(15, 118, 110, 0.18), transparent 34%),
+                radial-gradient(circle at top right, rgba(37, 99, 235, 0.16), transparent 30%),
+                linear-gradient(135deg, var(--bg-a), var(--bg-b));
+        }
+
+        .shell {
+            max-width: 1080px;
+            margin: 0 auto;
+            padding: 48px 20px 64px;
+        }
+
+        .hero, .panel {
+            background: var(--panel);
+            border: 1px solid var(--edge);
+            border-radius: 24px;
+            box-shadow: 0 24px 60px rgba(21, 32, 51, 0.08);
+            backdrop-filter: blur(10px);
+        }
+
+        .hero {
+            padding: 36px;
+            margin-bottom: 24px;
+        }
+
+        .eyebrow {
+            display: inline-block;
+            padding: 6px 12px;
+            border-radius: 999px;
+            background: var(--accent-soft);
+            color: var(--accent);
+            font-size: 14px;
+            font-weight: 700;
+            letter-spacing: 0.03em;
+            text-transform: uppercase;
+        }
+
+        h1 {
+            margin: 16px 0 12px;
+            font-size: clamp(2rem, 4vw, 3.5rem);
+            line-height: 1.05;
+        }
+
+        h2 {
+            margin: 0 0 12px;
+            font-size: 1.2rem;
+        }
+
+        p {
+            margin: 0;
+            color: var(--muted);
+            line-height: 1.7;
+        }
+
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+            gap: 18px;
+            margin-top: 24px;
+        }
+
+        .card {
+            padding: 22px;
+            border-radius: 18px;
+            background: white;
+            border: 1px solid var(--edge);
+        }
+
+        .card h2 {
+            margin-top: 12px;
+            margin-bottom: 10px;
+        }
+
+        .tag {
+            display: inline-block;
+            padding: 4px 10px;
+            border-radius: 999px;
+            background: #eef2ff;
+            color: #4338ca;
+            font-size: 0.8rem;
+            font-weight: 700;
+        }
+
+        a {
+            color: #0f4c81;
+            text-decoration: none;
+            font-weight: 600;
+        }
+
         a:hover { text-decoration: underline; }
-        ul { line-height: 1.8; }
-        .badge { display: inline-block; padding: .2rem .6rem; background: #e5effc; border-radius: 999px; font-size: .85rem; margin-right: .5rem; }
+
+        .panel {
+            padding: 28px 32px;
+        }
+
+        .endpoint-list {
+            display: grid;
+            gap: 12px;
+            margin-top: 18px;
+        }
+
+        .endpoint {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px 14px;
+            align-items: center;
+            padding: 14px 16px;
+            border-radius: 14px;
+            background: #f8fafc;
+            border: 1px solid #e2e8f0;
+        }
+
+        .method {
+            min-width: 70px;
+            padding: 5px 10px;
+            border-radius: 999px;
+            font-size: 0.8rem;
+            font-weight: 700;
+            text-align: center;
+            color: white;
+        }
+
+        .get { background: #0284c7; }
+        .post { background: #16a34a; }
+        .put { background: #d97706; }
+        .patch { background: #7c3aed; }
+        .delete { background: #dc2626; }
+
+        code {
+            padding: 2px 6px;
+            border-radius: 8px;
+            background: #e2e8f0;
+            font-family: Consolas, monospace;
+        }
     </style>
 </head>
 <body>
-    <div class="container">
-        <h1>Book API</h1>
-        <p>这是一个可视化浏览器友好的 Django REST API 演示页面。</p>
-        <ul>
-            <li><span class="badge">API</span><a href="/api/">/api/</a> - DRF 浏览器界面，展示所有可用 endpoint。</li>
-            <li><span class="badge">Books</span><a href="/api/books/">/api/books/</a> - 管理书籍的 CRUD 页面。</li>
-            <li><span class="badge">Admin</span><a href="/admin/">/admin/</a> - Django 管理后台。</li>
-        </ul>
-        <p>你可以在浏览器中直接访问这些页面进行演示和测试。</p>
+    <div class="shell">
+        <section class="hero">
+            <span class="eyebrow">Coursework API Demo</span>
+            <h1>Book API control panel</h1>
+            <p>
+                This Django REST Framework project provides a database-backed book catalogue
+                with full CRUD operations, filtering, genre recommendations, aggregate statistics,
+                Swagger documentation, and a browsable API for live demonstrations.
+            </p>
+            <div class="grid">
+                <article class="card">
+                    <span class="tag">Documentation</span>
+                    <h2><a href="/api/docs/swagger/">Swagger UI</a></h2>
+                    <p>Interactive API documentation generated from the live schema.</p>
+                </article>
+                <article class="card">
+                    <span class="tag">Browsable API</span>
+                    <h2><a href="/api/books/">Books endpoint</a></h2>
+                    <p>Use DRF's built-in interface to create, view, edit, and delete book records.</p>
+                </article>
+                <article class="card">
+                    <span class="tag">Administration</span>
+                    <h2><a href="/admin/">Django admin</a></h2>
+                    <p>Manage the dataset through the admin dashboard with search and filtering.</p>
+                </article>
+            </div>
+        </section>
+
+        <section class="panel">
+            <h2>Key endpoints</h2>
+            <p>The project exposes the minimum CRUD routes plus richer query and analytics endpoints for the coursework demonstration.</p>
+            <div class="endpoint-list">
+                <div class="endpoint"><span class="method get">GET</span> <code>/api/books/</code> List all books, optionally filtered by <code>genre</code>, <code>author</code>, <code>published_year</code>, <code>search</code>, and <code>ordering</code>.</div>
+                <div class="endpoint"><span class="method post">POST</span> <code>/api/books/</code> Create a new book.</div>
+                <div class="endpoint"><span class="method get">GET</span> <code>/api/books/{id}/</code> Retrieve one book by ID.</div>
+                <div class="endpoint"><span class="method put">PUT</span> <code>/api/books/{id}/</code> Replace a book record.</div>
+                <div class="endpoint"><span class="method delete">DELETE</span> <code>/api/books/{id}/</code> Delete a book.</div>
+                <div class="endpoint"><span class="method get">GET</span> <code>/api/books/?genre=Fantasy</code> Filter books by genre in the main collection endpoint.</div>
+                <div class="endpoint"><span class="method get">GET</span> <code>/api/books/stats/</code> Return collection-wide summary statistics.</div>
+                <div class="endpoint"><span class="method get">GET</span> <code>/api/schema/</code> OpenAPI schema in JSON format.</div>
+            </div>
+        </section>
     </div>
 </body>
 </html>

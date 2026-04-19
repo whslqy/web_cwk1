@@ -1,0 +1,238 @@
+openapi: 3.0.3
+info:
+  title: Book API
+  version: 1.0.0
+  description: A coursework-ready Django REST API for managing and exploring books.
+paths:
+  /api/books/:
+    get:
+      operationId: books_list
+      description: Returns all books and supports filtering, search, and ordering
+        through query parameters.
+      summary: List books
+      parameters:
+      - in: query
+        name: author
+        schema:
+          type: string
+        description: Filter by author name containing the given text.
+      - in: query
+        name: genre
+        schema:
+          type: string
+        description: Filter by exact genre, case-insensitive.
+      - in: query
+        name: ordering
+        schema:
+          type: string
+        description: Sort by title, author, or published_year. Prefix with - for descending.
+      - in: query
+        name: published_year
+        schema:
+          type: integer
+        description: Filter by exact publication year.
+      - in: query
+        name: search
+        schema:
+          type: string
+        description: Search title, author, genre, and description.
+      tags:
+      - books
+      security:
+      - basicAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Book'
+              examples:
+                FilteredListExample:
+                  value:
+                  - - id: 1
+                      title: The Pragmatic Programmer
+                      author: Andrew Hunt
+                      genre: Technology
+                      published_year: 1999
+                      description: Classic software craftsmanship guidance.
+                  summary: Filtered list example
+          description: ''
+    post:
+      operationId: books_create
+      description: Creates a new book record in the database.
+      summary: Create a book
+      tags:
+      - books
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Book'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/Book'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/Book'
+        required: true
+      security:
+      - basicAuth: []
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Book'
+          description: ''
+  /api/books/{id}/:
+    get:
+      operationId: books_retrieve
+      description: Returns one book by ID.
+      summary: Retrieve a single book
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this book.
+        required: true
+      tags:
+      - books
+      security:
+      - basicAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Book'
+          description: ''
+    put:
+      operationId: books_update
+      description: Replaces an existing book record.
+      summary: Update a book
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this book.
+        required: true
+      tags:
+      - books
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Book'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/Book'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/Book'
+        required: true
+      security:
+      - basicAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Book'
+          description: ''
+    delete:
+      operationId: books_destroy
+      description: Removes a book from the database.
+      summary: Delete a book
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this book.
+        required: true
+      tags:
+      - books
+      security:
+      - basicAuth: []
+      responses:
+        '204':
+          description: No response body
+  /api/books/stats/:
+    get:
+      operationId: books_stats_retrieve
+      description: Returns aggregate statistics for the current book collection.
+      summary: Book statistics
+      tags:
+      - books
+      security:
+      - basicAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BookStats'
+          description: ''
+components:
+  schemas:
+    Book:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        title:
+          type: string
+          maxLength: 200
+        author:
+          type: string
+          maxLength: 100
+        genre:
+          type: string
+          maxLength: 50
+        published_year:
+          type: integer
+        description:
+          type: string
+      required:
+      - author
+      - genre
+      - id
+      - published_year
+      - title
+    BookStats:
+      type: object
+      properties:
+        total_books:
+          type: integer
+        average_published_year:
+          type: number
+          format: double
+          nullable: true
+        earliest_published_year:
+          type: integer
+          nullable: true
+        latest_published_year:
+          type: integer
+          nullable: true
+        genres:
+          type: object
+          additionalProperties:
+            type: integer
+      required:
+      - average_published_year
+      - earliest_published_year
+      - genres
+      - latest_published_year
+      - total_books
+  securitySchemes:
+    basicAuth:
+      type: http
+      scheme: basic
