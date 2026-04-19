@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Book API Home</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 2rem; background: #f4f7fb; color: #1d2733; }
+        .container { max-width: 800px; margin: auto; padding: 2rem; background: white; border-radius: 12px; box-shadow: 0 10px 30px rgba(0,0,0,.08); }
+        h1 { margin-top: 0; }
+        a { color: #1d70b8; text-decoration: none; }
+        a:hover { text-decoration: underline; }
+        ul { line-height: 1.8; }
+        .badge { display: inline-block; padding: .2rem .6rem; background: #e5effc; border-radius: 999px; font-size: .85rem; margin-right: .5rem; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Book API</h1>
+        <p>这是一个可视化浏览器友好的 Django REST API 演示页面。</p>
+        <ul>
+            <li><span class="badge">API</span><a href="/api/">/api/</a> - DRF 浏览器界面，展示所有可用 endpoint。</li>
+            <li><span class="badge">Books</span><a href="/api/books/">/api/books/</a> - 管理书籍的 CRUD 页面。</li>
+            <li><span class="badge">Admin</span><a href="/admin/">/admin/</a> - Django 管理后台。</li>
+        </ul>
+        <p>你可以在浏览器中直接访问这些页面进行演示和测试。</p>
+    </div>
+</body>
+</html>
