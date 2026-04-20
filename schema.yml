@@ -12,15 +12,36 @@ paths:
       summary: List books
       parameters:
       - in: query
+        name: genre
+        schema:
+          type: string
+        description: Filter by exact genre, case-insensitive.
+      - in: query
+        name: bookid
+        schema:
+          type: integer
+        description: Filter by the sequential coursework book ID.
+      - in: query
         name: author
         schema:
           type: string
         description: Filter by author name containing the given text.
       - in: query
-        name: genre
+        name: published_year
+        schema:
+          type: integer
+        description: Filter by exact publication year.
+      - in: query
+        name: search
         schema:
           type: string
-        description: Filter by exact genre, case-insensitive.
+        description: Search title, author, genre, and description.
+      - in: query
+        name: ordering
+        schema:
+          type: string
+        description: Sort by bookid, title, author, published_year, average_rating,
+          or ratings_count. Prefix with - for descending.
       - in: query
         name: language
         schema:
@@ -32,21 +53,6 @@ paths:
           type: number
           format: double
         description: Filter by minimum average rating.
-      - in: query
-        name: ordering
-        schema:
-          type: string
-        description: Sort by title, author, or published_year. Prefix with - for descending.
-      - in: query
-        name: published_year
-        schema:
-          type: integer
-        description: Filter by exact publication year.
-      - in: query
-        name: search
-        schema:
-          type: string
-        description: Search title, author, genre, and description.
       tags:
       - books
       security:
@@ -174,28 +180,50 @@ paths:
       responses:
         '204':
           description: No response body
-  /api/books/recommendations/:
+  /api/books/by-bookid/{bookid}/:
     get:
-      operationId: books_recommendations_list
-      description: Returns recommended books, optionally narrowed by genre or author
-        text.
-      summary: Recommend books
+      operationId: books_by_bookid_retrieve
+      description: Returns one book using the sequential coursework bookid instead
+        of the database primary key.
+      summary: Retrieve a book by bookid
+      parameters:
+      - in: path
+        name: bookid
+        schema:
+          type: integer
+        description: Sequential coursework book ID.
+        required: true
+      tags:
+      - books
+      security:
+      - basicAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Book'
+          description: ''
+  /api/books/recommendations/similar/:
+    get:
+      operationId: books_recommendations_similar_list
+      description: Finds books similar to a seed book identified by bookid. The score
+        uses weighted title, author, publisher, language, rating, and year signals,
+        plus diversity penalties to reduce repeated authors and near-duplicate titles.
+      summary: Recommend similar books
       parameters:
       - in: query
-        name: author
+        name: bookid
         schema:
-          type: string
-        description: Optional author text filter.
-      - in: query
-        name: genre
-        schema:
-          type: string
-        description: Optional genre for recommendations.
+          type: integer
+        description: Sequential coursework book ID of the seed book.
+        required: true
       - in: query
         name: limit
         schema:
           type: integer
-        description: Maximum number of recommendations to return.
+        description: Maximum number of similar books to return.
       tags:
       - books
       security:
@@ -208,7 +236,63 @@ paths:
               schema:
                 type: array
                 items:
-                  $ref: '#/components/schemas/Recommendation'
+                  $ref: '#/components/schemas/RecommendationResult'
+          description: ''
+  /api/books/search/:
+    get:
+      operationId: books_search_list
+      description: Searches books by title, author, publisher, language, and rating.
+        Results are sorted by average rating first and ratings count second.
+      summary: Search books
+      parameters:
+      - in: query
+        name: title
+        schema:
+          type: string
+          minLength: 1
+        description: Optional title text filter.
+      - in: query
+        name: author
+        schema:
+          type: string
+          minLength: 1
+        description: Optional author text filter.
+      - in: query
+        name: publisher
+        schema:
+          type: string
+          minLength: 1
+        description: Optional publisher text filter.
+      - in: query
+        name: language
+        schema:
+          type: string
+          minLength: 1
+        description: Optional language code filter, for example eng or en-US.
+      - in: query
+        name: min_rating
+        schema:
+          type: number
+          format: double
+        description: Optional minimum average rating.
+      - in: query
+        name: limit
+        schema:
+          type: integer
+        description: Maximum number of search results to return.
+      tags:
+      - books
+      security:
+      - basicAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/SearchResult'
           description: ''
   /api/books/stats/:
     get:
@@ -235,6 +319,10 @@ components:
         id:
           type: integer
           readOnly: true
+        bookid:
+          type: integer
+          readOnly: true
+          nullable: true
         title:
           type: string
           maxLength: 200
@@ -269,6 +357,7 @@ components:
           maxLength: 200
       required:
       - author
+      - bookid
       - genre
       - id
       - published_year
@@ -298,11 +387,58 @@ components:
       - genres
       - latest_published_year
       - total_books
-    Recommendation:
+    RecommendationResult:
       type: object
       properties:
         id:
           type: integer
+        bookid:
+          type: integer
+          nullable: true
+        title:
+          type: string
+        author:
+          type: string
+        genre:
+          type: string
+        publisher:
+          type: string
+        language:
+          type: string
+        published_year:
+          type: integer
+        average_rating:
+          type: number
+          format: double
+          nullable: true
+        ratings_count:
+          type: integer
+        similarity_score:
+          type: number
+          format: double
+        reason:
+          type: string
+      required:
+      - author
+      - average_rating
+      - bookid
+      - genre
+      - id
+      - language
+      - published_year
+      - publisher
+      - ratings_count
+      - reason
+      - similarity_score
+      - title
+    SearchResult:
+      type: object
+      properties:
+        id:
+          type: integer
+        bookid:
+          type: integer
+          nullable: true
         title:
           type: string
         author:
@@ -317,16 +453,17 @@ components:
           nullable: true
         ratings_count:
           type: integer
-        reason:
+        match_summary:
           type: string
       required:
       - author
       - average_rating
+      - bookid
       - genre
       - id
+      - match_summary
       - published_year
       - ratings_count
-      - reason
       - title
   securitySchemes:
     basicAuth:

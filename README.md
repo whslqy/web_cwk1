@@ -6,10 +6,12 @@ This repository contains a Django REST Framework project for managing and explor
 
 - Full CRUD operations for a `Book` model
 - SQLite database integration
+- Sequential `bookid` field for stable coursework-friendly lookup
 - Search, filtering, and ordering on the collection endpoint
 - Genre filtering through the main collection endpoint
-- Public dataset import from `archive/Books.csv`
-- Recommendation endpoint for metadata-based book suggestions
+- Public dataset import from `archive/books.csv`
+- Rating-ranked search endpoint for exploring book suggestions
+- Weighted similar-book recommendation endpoint based on title, author, publisher, language, rating, and year
 - Aggregate statistics endpoint
 - Swagger UI and ReDoc documentation generated from the live API schema
 - DRF browsable API for local demonstration
@@ -22,7 +24,7 @@ This repository contains a Django REST Framework project for managing and explor
 - `books/` API app with model, serializer, viewset, admin, and tests
 - `templates/home.html` landing page with links for demonstration
 - `api_docs.md` manual API documentation
-- `archive/Books.csv` public book metadata dataset
+- `archive/books.csv` public book metadata dataset
 - `XJCO3011_Coursework1_Brief__2025_2026.pdf` coursework brief
 
 ## Setup
@@ -58,6 +60,7 @@ python manage.py runserver
 
 - Home page: `http://localhost:8000/`
 - Browsable API: `http://localhost:8000/api/books/`
+- Retrieve by bookid: `http://localhost:8000/api/books/by-bookid/1/`
 - Swagger UI: `http://localhost:8000/api/docs/swagger/`
 - ReDoc: `http://localhost:8000/api/docs/redoc/`
 - OpenAPI schema: `http://localhost:8000/api/schema/`
@@ -66,7 +69,7 @@ python manage.py runserver
 ## API documentation
 
 - Manual documentation: `api_docs.md`
-- Submission-ready PDF: `Book_API_Documentation.pdf`
+- Submission-ready PDF: `api_docs.pdf`
 - Interactive documentation: Swagger UI at `/api/docs/swagger/`
 
 ## Authentication behaviour
@@ -91,10 +94,16 @@ List books:
 curl http://localhost:8000/api/books/
 ```
 
-Get recommendations by genre:
+Retrieve a book by sequential bookid:
 
 ```bash
-curl "http://localhost:8000/api/books/?genre=Science%20Fiction"
+curl http://localhost:8000/api/books/by-bookid/1/
+```
+
+Filter books by language and minimum rating:
+
+```bash
+curl "http://localhost:8000/api/books/?language=eng&min_rating=4.5"
 ```
 
 View collection statistics:
@@ -103,10 +112,16 @@ View collection statistics:
 curl http://localhost:8000/api/books/stats/
 ```
 
-Get recommendations:
+Search books by title, author, or publisher:
 
 ```bash
-curl "http://localhost:8000/api/books/recommendations/?genre=Science%20Fiction&limit=5"
+curl "http://localhost:8000/api/books/search/?title=Harry%20Potter&author=J.K.%20Rowling&limit=5"
+```
+
+Get similar book recommendations from a seed book:
+
+```bash
+curl "http://localhost:8000/api/books/recommendations/similar/?bookid=1&limit=5"
 ```
 
 ## Testing

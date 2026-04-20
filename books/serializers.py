@@ -7,6 +7,7 @@ class BookSerializer(serializers.ModelSerializer):
     class Meta:
         model = Book
         fields = '__all__'
+        read_only_fields = ('bookid',)
 
     def validate_title(self, value):
         value = value.strip()
@@ -53,12 +54,37 @@ class BookStatsSerializer(serializers.Serializer):
     genres = serializers.DictField(child=serializers.IntegerField())
 
 
-class RecommendationSerializer(serializers.Serializer):
+class SearchQuerySerializer(serializers.Serializer):
+    title = serializers.CharField(required=False, help_text='Optional title text filter.')
+    author = serializers.CharField(required=False, help_text='Optional author text filter.')
+    publisher = serializers.CharField(required=False, help_text='Optional publisher text filter.')
+    language = serializers.CharField(required=False, help_text='Optional language code filter, for example eng or en-US.')
+    min_rating = serializers.FloatField(required=False, help_text='Optional minimum average rating.')
+    limit = serializers.IntegerField(required=False, help_text='Maximum number of search results to return.')
+
+
+class SearchResultSerializer(serializers.Serializer):
     id = serializers.IntegerField()
+    bookid = serializers.IntegerField(allow_null=True)
     title = serializers.CharField()
     author = serializers.CharField()
     genre = serializers.CharField()
     published_year = serializers.IntegerField()
     average_rating = serializers.FloatField(allow_null=True)
     ratings_count = serializers.IntegerField()
+    match_summary = serializers.CharField()
+
+
+class RecommendationResultSerializer(serializers.Serializer):
+    id = serializers.IntegerField()
+    bookid = serializers.IntegerField(allow_null=True)
+    title = serializers.CharField()
+    author = serializers.CharField()
+    genre = serializers.CharField()
+    publisher = serializers.CharField(allow_blank=True)
+    language = serializers.CharField(allow_blank=True)
+    published_year = serializers.IntegerField()
+    average_rating = serializers.FloatField(allow_null=True)
+    ratings_count = serializers.IntegerField()
+    similarity_score = serializers.FloatField()
     reason = serializers.CharField()

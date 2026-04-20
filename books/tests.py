@@ -132,6 +132,20 @@ class BookAPITests(APITestCase):
         self.assertEqual(len(response.data), 1)
         self.assertEqual(response.data[0]['title'], 'Dune')
 
+    def test_filter_by_bookid(self):
+        response = self.client.get('/api/books/', {'bookid': self.book_one.bookid})
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(len(response.data), 1)
+        self.assertEqual(response.data[0]['title'], 'Clean Code')
+
+    def test_retrieve_by_bookid(self):
+        response = self.client.get(f'/api/books/by-bookid/{self.book_two.bookid}/')
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.data['title'], 'Dune')
+        self.assertEqual(response.data['bookid'], self.book_two.bookid)
+
     def test_stats_endpoint(self):
         response = self.client.get('/api/books/stats/')
 
@@ -141,13 +155,124 @@ class BookAPITests(APITestCase):
         self.assertEqual(response.data['latest_published_year'], 2008)
         self.assertEqual(response.data['genres']['Technology'], 1)
 
-    def test_recommendations_endpoint(self):
-        response = self.client.get('/api/books/recommendations/', {'genre': 'Science Fiction'})
+    def test_search_endpoint(self):
+        response = self.client.get('/api/books/search/', {'author': 'Frank Herbert'})
 
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(len(response.data), 1)
         self.assertEqual(response.data[0]['title'], 'Dune')
+        self.assertIn('match_summary', response.data[0])
+
+    def test_search_supports_title_filter(self):
+        response = self.client.get('/api/books/search/', {'title': 'clean'})
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(len(response.data), 1)
+        self.assertEqual(response.data[0]['title'], 'Clean Code')
+
+    def test_search_prioritises_average_rating_before_rating_count(self):
+        Book.objects.create(
+            title='Highly Rated Niche Book',
+            author='Specialist Author',
+            genre='Technology',
+            published_year=2022,
+            average_rating=4.9,
+            ratings_count=10,
+        )
+        Book.objects.create(
+            title='Popular But Lower Rated Book',
+            author='Specialist Author',
+            genre='Technology',
+            published_year=2021,
+            average_rating=4.2,
+            ratings_count=10000,
+        )
+
+        response = self.client.get('/api/books/search/', {'author': 'Specialist Author'})
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.data[0]['title'], 'Highly Rated Niche Book')
+
+    def test_similar_recommendations_by_bookid(self):
+        Book.objects.create(
+            title='Clean Architecture',
+            author='Robert C. Martin',
+            genre='Technology',
+            published_year=2017,
+            publisher='Prentice Hall',
+            language='en',
+            average_rating=4.5,
+            ratings_count=2000,
+        )
+        Book.objects.create(
+            title='The Clean Coder',
+            author='Robert C. Martin',
+            genre='Technology',
+            published_year=2011,
+            publisher='Prentice Hall',
+            language='en',
+            average_rating=4.4,
+            ratings_count=1500,
+        )
+
+        response = self.client.get('/api/books/recommendations/similar/', {'bookid': self.book_one.bookid, 'limit': 2})
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(len(response.data), 2)
+        self.assertIn(response.data[0]['title'], {'Clean Architecture', 'The Clean Coder'})
+        self.assertIn('similarity_score', response.data[0])
         self.assertIn('reason', response.data[0])
+
+    def test_similar_recommendations_apply_author_penalty_for_repeated_results(self):
+        Book.objects.create(
+            title='Clean Architecture',
+            author='Robert C. Martin',
+            genre='Technology',
+            published_year=2017,
+            publisher='Prentice Hall',
+            language='en',
+            average_rating=4.5,
+            ratings_count=2000,
+        )
+        Book.objects.create(
+            title='The Clean Coder',
+            author='Robert C. Martin',
+            genre='Technology',
+            published_year=2011,
+            publisher='Prentice Hall',
+            language='en',
+            average_rating=4.4,
+            ratings_count=1500,
+        )
+        Book.objects.create(
+            title='Clean Craftsmanship',
+            author='Robert C. Martin',
+            genre='Technology',
+            published_year=2020,
+            publisher='Prentice Hall',
+            language='en',
+            average_rating=4.3,
+            ratings_count=1000,
+        )
+        Book.objects.create(
+            title='Code Complete',
+            author='Steve McConnell',
+            genre='Technology',
+            published_year=2004,
+            publisher='Microsoft Press',
+            language='en',
+            average_rating=4.7,
+            ratings_count=5000,
+        )
+
+        response = self.client.get('/api/books/recommendations/similar/', {'bookid': self.book_one.bookid, 'limit': 3})
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        titles = [item['title'] for item in response.data]
+        self.assertIn('Code Complete', titles)
+        self.assertNotIn('Clean Craftsmanship', titles)
+        robert_martin_count = sum(item['author'] == 'Robert C. Martin' for item in response.data)
+        self.assertLessEqual(robert_martin_count, 2)
 
     def test_swagger_ui_is_available(self):
         response = self.client.get(reverse('swagger-ui'))
