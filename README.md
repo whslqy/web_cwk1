@@ -27,6 +27,16 @@ This repository contains a Django REST Framework project for managing and explor
 - `archive/books.csv` public book metadata dataset
 - `XJCO3011_Coursework1_Brief__2025_2026.pdf` coursework brief
 
+## Dataset source
+
+The current dataset used by this project is **Goodreads-books** by **Soumik** on Kaggle:
+
+`https://www.kaggle.com/datasets/jealousleopard/goodreadsbooks`
+
+Reference:
+
+`Soumik. 2020. Goodreads-books. [Online]. [Accessed 20 April 2026]. Available from: https://www.kaggle.com/datasets/jealousleopard/goodreadsbooks`
+
 ## Setup
 
 1. Create and activate a virtual environment.
@@ -65,6 +75,8 @@ python manage.py runserver
 - ReDoc: `http://localhost:8000/api/docs/redoc/`
 - OpenAPI schema: `http://localhost:8000/api/schema/`
 - Admin: `http://localhost:8000/admin/`
+- Deployed home page: `https://whslqy.pythonanywhere.com/`
+- Deployed Swagger UI: `https://whslqy.pythonanywhere.com/api/docs/swagger/`
 
 ## API documentation
 
@@ -83,7 +95,7 @@ python manage.py runserver
 Create a book:
 
 ```bash
-curl -X POST http://localhost:8000/api/books/ \
+curl -u username:password -X POST http://localhost:8000/api/books/ \
   -H "Content-Type: application/json" \
   -d "{\"title\":\"Dune\",\"author\":\"Frank Herbert\",\"genre\":\"Science Fiction\",\"published_year\":1965,\"description\":\"Classic sci-fi novel.\"}"
 ```

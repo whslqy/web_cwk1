@@ -36,7 +36,15 @@ Each `Book` record contains:
 
 ## Public dataset integration
 
-The project imports book metadata from the public CSV dataset stored at `archive/books.csv`. The dataset includes title, authors, average rating, ISBN values, language code, page count, ratings count, text review count, publication date, and publisher. The imported dataset does not include genre, description, or thumbnail values, so imported rows use `Uncategorised` as the default genre and leave description and thumbnail blank unless edited manually.
+The project imports book metadata from the public CSV dataset stored at `archive/books.csv`. The dataset used in the current project is **Goodreads-books** by **Soumik** on Kaggle:
+
+`https://www.kaggle.com/datasets/jealousleopard/goodreadsbooks`
+
+Reference:
+
+`Soumik. 2020. Goodreads-books. [Online]. [Accessed 20 April 2026]. Available from: https://www.kaggle.com/datasets/jealousleopard/goodreadsbooks`
+
+The dataset includes title, authors, average rating, ISBN values, language code, page count, ratings count, text review count, publication date, and publisher. The imported dataset does not include genre, description, or thumbnail values, so imported rows use `Uncategorised` as the default genre and leave description and thumbnail blank unless edited manually.
 
 Import command:
 
