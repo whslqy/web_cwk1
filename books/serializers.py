@@ -34,6 +34,16 @@ class BookSerializer(serializers.ModelSerializer):
             )
         return value
 
+    def validate_average_rating(self, value):
+        if value is not None and (value < 0 or value > 5):
+            raise serializers.ValidationError('Average rating must be between 0 and 5.')
+        return value
+
+    def validate_ratings_count(self, value):
+        if value < 0:
+            raise serializers.ValidationError('Ratings count cannot be negative.')
+        return value
+
 
 class BookStatsSerializer(serializers.Serializer):
     total_books = serializers.IntegerField()
@@ -41,3 +51,14 @@ class BookStatsSerializer(serializers.Serializer):
     earliest_published_year = serializers.IntegerField(allow_null=True)
     latest_published_year = serializers.IntegerField(allow_null=True)
     genres = serializers.DictField(child=serializers.IntegerField())
+
+
+class RecommendationSerializer(serializers.Serializer):
+    id = serializers.IntegerField()
+    title = serializers.CharField()
+    author = serializers.CharField()
+    genre = serializers.CharField()
+    published_year = serializers.IntegerField()
+    average_rating = serializers.FloatField(allow_null=True)
+    ratings_count = serializers.IntegerField()
+    reason = serializers.CharField()

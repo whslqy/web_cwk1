@@ -29,6 +29,12 @@ class BookAPITests(APITestCase):
             genre='Technology',
             published_year=2008,
             description='A handbook of agile software craftsmanship.',
+            pages=464,
+            publisher='Prentice Hall',
+            language='en',
+            average_rating=4.4,
+            ratings_count=1200,
+            thumbnail='https://example.com/clean-code.jpg',
         )
         self.book_two = Book.objects.create(
             title='Dune',
@@ -36,6 +42,12 @@ class BookAPITests(APITestCase):
             genre='Science Fiction',
             published_year=1965,
             description='A landmark science fiction novel.',
+            pages=688,
+            publisher='Chilton Books',
+            language='en',
+            average_rating=4.6,
+            ratings_count=2500,
+            thumbnail='https://example.com/dune.jpg',
         )
 
     def test_list_books(self):
@@ -51,6 +63,12 @@ class BookAPITests(APITestCase):
             'genre': 'Fantasy',
             'published_year': 1937,
             'description': 'A fantasy adventure novel.',
+            'pages': 310,
+            'publisher': 'George Allen & Unwin',
+            'language': 'en',
+            'average_rating': 4.7,
+            'ratings_count': 3000,
+            'thumbnail': 'https://example.com/hobbit.jpg',
         }
 
         self._authenticate_as_admin()
@@ -70,6 +88,12 @@ class BookAPITests(APITestCase):
                 'genre': 'Software Engineering',
                 'published_year': self.book_one.published_year,
                 'description': self.book_one.description,
+                'pages': self.book_one.pages,
+                'publisher': self.book_one.publisher,
+                'language': self.book_one.language,
+                'average_rating': self.book_one.average_rating,
+                'ratings_count': self.book_one.ratings_count,
+                'thumbnail': self.book_one.thumbnail,
             },
             format='json',
         )
@@ -101,6 +125,13 @@ class BookAPITests(APITestCase):
         self.assertEqual(len(response.data), 1)
         self.assertEqual(response.data[0]['title'], 'Dune')
 
+    def test_filter_by_min_rating(self):
+        response = self.client.get('/api/books/', {'min_rating': 4.5})
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(len(response.data), 1)
+        self.assertEqual(response.data[0]['title'], 'Dune')
+
     def test_stats_endpoint(self):
         response = self.client.get('/api/books/stats/')
 
@@ -109,6 +140,14 @@ class BookAPITests(APITestCase):
         self.assertEqual(response.data['earliest_published_year'], 1965)
         self.assertEqual(response.data['latest_published_year'], 2008)
         self.assertEqual(response.data['genres']['Technology'], 1)
+
+    def test_recommendations_endpoint(self):
+        response = self.client.get('/api/books/recommendations/', {'genre': 'Science Fiction'})
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(len(response.data), 1)
+        self.assertEqual(response.data[0]['title'], 'Dune')
+        self.assertIn('reason', response.data[0])
 
     def test_swagger_ui_is_available(self):
         response = self.client.get(reverse('swagger-ui'))
@@ -127,6 +166,7 @@ class BookAPITests(APITestCase):
             'genre': 'Test',
             'published_year': 2020,
             'description': 'Should be rejected.',
+            'ratings_count': 0,
         }
 
         response = self.client.post('/api/books/', payload, format='json')
@@ -140,6 +180,7 @@ class BookAPITests(APITestCase):
             'genre': 'Speculative',
             'published_year': 9999,
             'description': 'Invalid future year.',
+            'ratings_count': 0,
         }
 
         self._authenticate_as_admin()

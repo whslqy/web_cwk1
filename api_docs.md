@@ -2,7 +2,7 @@
 
 ## Overview
 
-This project is a Django REST Framework API for storing and exploring book data. It satisfies the coursework requirement for a database-backed API with CRUD functionality, JSON responses, correct HTTP status codes, and live documentation.
+This project is a Django REST Framework API for storing and exploring book metadata from a public CSV dataset. It satisfies the coursework requirement for a database-backed API with CRUD functionality, JSON responses, correct HTTP status codes, recommendation support, collection statistics, and live documentation.
 
 ## Base URLs
 
@@ -23,8 +23,24 @@ Each `Book` record contains:
   "author": "Robert C. Martin",
   "genre": "Technology",
   "published_year": 2008,
-  "description": "A handbook of agile software craftsmanship."
+  "description": "A handbook of agile software craftsmanship.",
+  "pages": 464,
+  "publisher": "Prentice Hall",
+  "language": "en",
+  "average_rating": 4.4,
+  "ratings_count": 1200,
+  "thumbnail": "https://example.com/clean-code.jpg"
 }
+```
+
+## Public dataset integration
+
+The project imports book metadata from the public CSV dataset stored at `archive/Books.csv`. The dataset includes title, author, pages, genre, description, publication date, publisher, language, average rating, ratings count, and thumbnail URL values.
+
+Import command:
+
+```bash
+python manage.py import_books_dataset --replace
 ```
 
 ## Endpoints
@@ -40,6 +56,8 @@ Each `Book` record contains:
   - `published_year`: exact year match
   - `search`: searches title, author, genre, and description
   - `ordering`: `title`, `-title`, `author`, `-author`, `published_year`, `-published_year`
+  - `language`: exact language code match
+  - `min_rating`: minimum average rating
 
 Example request:
 
@@ -141,6 +159,22 @@ Example response:
 }
 ```
 
+### 8. Recommended books
+
+- Method: `GET`
+- URL: `/api/books/recommendations/`
+- Purpose: Return recommended books from the public dataset, prioritising genre and author matching and filling up to the requested limit
+- Optional query parameters:
+  - `genre`
+  - `author`
+  - `limit`
+
+Example request:
+
+```http
+GET /api/books/recommendations/?genre=Science%20Fiction&limit=5
+```
+
 ## Status Codes
 
 - `200 OK`: Request succeeded
@@ -155,10 +189,13 @@ Example response:
 - `title`, `author`, and `genre` cannot be blank
 - `published_year` must be between `0` and the current year
 - `description` may be blank
+- `average_rating`, when present, must be between `0` and `5`
+- `ratings_count` cannot be negative
 
 ## Authentication
 
 - Read-only requests such as `GET /api/books/`, `GET /api/books/{id}/`, and `GET /api/books/stats/` are public.
+- `GET /api/books/recommendations/` is also public.
 - Write operations such as `POST`, `PUT`, and `DELETE` require authentication.
 - Swagger UI uses Basic Authentication, so you only need a username and password.
 - For the current local setup, you can log in with the admin account created for the project.

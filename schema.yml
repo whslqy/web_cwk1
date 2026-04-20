@@ -22,6 +22,17 @@ paths:
           type: string
         description: Filter by exact genre, case-insensitive.
       - in: query
+        name: language
+        schema:
+          type: string
+        description: Filter by language code, for example en.
+      - in: query
+        name: min_rating
+        schema:
+          type: number
+          format: double
+        description: Filter by minimum average rating.
+      - in: query
         name: ordering
         schema:
           type: string
@@ -163,6 +174,42 @@ paths:
       responses:
         '204':
           description: No response body
+  /api/books/recommendations/:
+    get:
+      operationId: books_recommendations_list
+      description: Returns recommended books, optionally narrowed by genre or author
+        text.
+      summary: Recommend books
+      parameters:
+      - in: query
+        name: author
+        schema:
+          type: string
+        description: Optional author text filter.
+      - in: query
+        name: genre
+        schema:
+          type: string
+        description: Optional genre for recommendations.
+      - in: query
+        name: limit
+        schema:
+          type: integer
+        description: Maximum number of recommendations to return.
+      tags:
+      - books
+      security:
+      - basicAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Recommendation'
+          description: ''
   /api/books/stats/:
     get:
       operationId: books_stats_retrieve
@@ -193,14 +240,33 @@ components:
           maxLength: 200
         author:
           type: string
-          maxLength: 100
+          maxLength: 255
         genre:
           type: string
-          maxLength: 50
+          maxLength: 100
         published_year:
           type: integer
         description:
           type: string
+        pages:
+          type: integer
+          nullable: true
+        publisher:
+          type: string
+          maxLength: 255
+        language:
+          type: string
+          maxLength: 20
+        average_rating:
+          type: number
+          format: double
+          nullable: true
+        ratings_count:
+          type: integer
+        thumbnail:
+          type: string
+          format: uri
+          maxLength: 200
       required:
       - author
       - genre
@@ -232,6 +298,36 @@ components:
       - genres
       - latest_published_year
       - total_books
+    Recommendation:
+      type: object
+      properties:
+        id:
+          type: integer
+        title:
+          type: string
+        author:
+          type: string
+        genre:
+          type: string
+        published_year:
+          type: integer
+        average_rating:
+          type: number
+          format: double
+          nullable: true
+        ratings_count:
+          type: integer
+        reason:
+          type: string
+      required:
+      - author
+      - average_rating
+      - genre
+      - id
+      - published_year
+      - ratings_count
+      - reason
+      - title
   securitySchemes:
     basicAuth:
       type: http

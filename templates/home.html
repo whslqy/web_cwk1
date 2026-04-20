@@ -190,7 +190,7 @@
 
         <section class="panel">
             <h2>Key endpoints</h2>
-            <p>The project exposes the minimum CRUD routes plus richer query and analytics endpoints for the coursework demonstration.</p>
+            <p>The project exposes the minimum CRUD routes plus richer query and recommendation endpoints for the coursework demonstration.</p>
             <div class="endpoint-list">
                 <div class="endpoint"><span class="method get">GET</span> <code>/api/books/</code> List all books, optionally filtered by <code>genre</code>, <code>author</code>, <code>published_year</code>, <code>search</code>, and <code>ordering</code>.</div>
                 <div class="endpoint"><span class="method post">POST</span> <code>/api/books/</code> Create a new book.</div>
@@ -199,6 +199,7 @@
                 <div class="endpoint"><span class="method delete">DELETE</span> <code>/api/books/{id}/</code> Delete a book.</div>
                 <div class="endpoint"><span class="method get">GET</span> <code>/api/books/?genre=Fantasy</code> Filter books by genre in the main collection endpoint.</div>
                 <div class="endpoint"><span class="method get">GET</span> <code>/api/books/stats/</code> Return collection-wide summary statistics.</div>
+                <div class="endpoint"><span class="method get">GET</span> <code>/api/books/recommendations/?genre=Science%20Fiction&amp;limit=5</code> Return up to the requested number of matching recommendations from the public dataset.</div>
                 <div class="endpoint"><span class="method get">GET</span> <code>/api/schema/</code> OpenAPI schema in JSON format.</div>
             </div>
         </section>
