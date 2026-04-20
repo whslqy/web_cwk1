@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    {% block head %}
+    <title>{{ title|default:"Swagger" }}</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    {% if favicon_href %}<link rel="icon" href="{{ favicon_href }}">{% endif %}
+    <link rel="stylesheet" href="{{ swagger_ui_css }}">
+    <style>
+      html { box-sizing: border-box; overflow-y: scroll; }
+      *, *:after, *:before { box-sizing: inherit; }
+      body { background: #fafafa; margin: 0; }
+
+      .docs-topbar {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 16px;
+        padding: 12px 18px;
+        background: #16324f;
+        border-bottom: 3px solid #c76b32;
+      }
+
+      .docs-topbar__title {
+        color: #f6f1e8;
+        font: 700 15px/1.2 Arial, sans-serif;
+        letter-spacing: 0.04em;
+        text-transform: uppercase;
+      }
+
+      .docs-topbar__link {
+        display: inline-flex;
+        align-items: center;
+        padding: 9px 14px;
+        border-radius: 999px;
+        background: #f6f1e8;
+        color: #16324f;
+        font: 700 14px/1 Arial, sans-serif;
+        text-decoration: none;
+      }
+
+      .docs-topbar__link:hover {
+        background: #ffffff;
+      }
+    </style>
+    {% endblock head %}
+  </head>
+  <body>
+    {% block body %}
+    <div class="docs-topbar">
+      <div class="docs-topbar__title">Book API Swagger UI</div>
+      <a class="docs-topbar__link" href="/">Back to Home</a>
+    </div>
+    <div id="swagger-ui"></div>
+    <script src="{{ swagger_ui_bundle }}"></script>
+    <script src="{{ swagger_ui_standalone }}"></script>
+    {% if script_url %}
+    <script src="{{ script_url }}"></script>
+    {% else %}
+    <script>
+    {% include template_name_js %}
+    </script>
+    {% endif %}
+    {% endblock %}
+  </body>
+</html>
