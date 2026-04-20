@@ -3,206 +3,1117 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Book API Portal</title>
+    <title>Book API Demo Studio</title>
     <style>
         :root {
-            --ink: #152033;
-            --muted: #5b6878;
-            --panel: rgba(255, 255, 255, 0.92);
-            --edge: rgba(21, 32, 51, 0.08);
-            --accent: #0f766e;
-            --accent-soft: #d7f7ef;
-            --bg-a: #ecfdf5;
-            --bg-b: #eff6ff;
+            --ink: #172033;
+            --muted: #5d6877;
+            --panel: rgba(255, 250, 244, 0.92);
+            --panel-strong: rgba(255, 255, 255, 0.96);
+            --edge: rgba(23, 32, 51, 0.09);
+            --accent: #bd4f2e;
+            --accent-deep: #8c2f1d;
+            --accent-soft: #ffe7d6;
+            --accent-glow: rgba(189, 79, 46, 0.18);
+            --secondary: #1f6f78;
+            --secondary-soft: rgba(31, 111, 120, 0.12);
+            --highlight: #f4b942;
+            --bg-a: #fff7ec;
+            --bg-b: #eef7f7;
+            --ok: #1f7a52;
+            --warn: #9a3412;
+            --shadow: 0 28px 70px rgba(23, 32, 51, 0.12);
+            --radius-xl: 28px;
+            --radius-lg: 20px;
+            --radius-md: 14px;
+            --mono: "Consolas", "Courier New", monospace;
+            --sans: "Trebuchet MS", "Gill Sans", "Segoe UI", sans-serif;
+            --serif: "Palatino Linotype", "Book Antiqua", Georgia, serif;
         }
 
-        * { box-sizing: border-box; }
+        * {
+            box-sizing: border-box;
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
 
         body {
             margin: 0;
             min-height: 100vh;
-            font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
             color: var(--ink);
+            font-family: var(--sans);
             background:
-                radial-gradient(circle at top left, rgba(15, 118, 110, 0.18), transparent 34%),
-                radial-gradient(circle at top right, rgba(37, 99, 235, 0.16), transparent 30%),
+                radial-gradient(circle at 10% 10%, rgba(189, 79, 46, 0.16), transparent 24%),
+                radial-gradient(circle at 92% 14%, rgba(31, 111, 120, 0.16), transparent 24%),
+                radial-gradient(circle at 75% 80%, rgba(244, 185, 66, 0.15), transparent 20%),
                 linear-gradient(135deg, var(--bg-a), var(--bg-b));
         }
 
-        .shell {
-            max-width: 1080px;
-            margin: 0 auto;
-            padding: 48px 20px 64px;
+        a {
+            color: inherit;
+            text-decoration: none;
         }
 
-        .hero, .panel {
-            background: var(--panel);
+        .shell {
+            width: min(1240px, calc(100% - 32px));
+            margin: 0 auto;
+            padding: 28px 0 56px;
+        }
+
+        .hero,
+        .surface,
+        .results-panel,
+        .console-card,
+        .link-card,
+        .stat-card {
             border: 1px solid var(--edge);
-            border-radius: 24px;
-            box-shadow: 0 24px 60px rgba(21, 32, 51, 0.08);
-            backdrop-filter: blur(10px);
+            box-shadow: var(--shadow);
+            backdrop-filter: blur(18px);
         }
 
         .hero {
-            padding: 36px;
-            margin-bottom: 24px;
+            position: relative;
+            overflow: hidden;
+            border-radius: 34px;
+            padding: 34px;
+            background:
+                linear-gradient(145deg, rgba(255, 255, 255, 0.94), rgba(255, 244, 235, 0.88)),
+                linear-gradient(120deg, rgba(189, 79, 46, 0.1), rgba(31, 111, 120, 0.08));
+        }
+
+        .hero::before,
+        .hero::after {
+            content: "";
+            position: absolute;
+            border-radius: 999px;
+            pointer-events: none;
+        }
+
+        .hero::before {
+            width: 320px;
+            height: 320px;
+            top: -140px;
+            right: -80px;
+            background: radial-gradient(circle, rgba(189, 79, 46, 0.18), transparent 65%);
+        }
+
+        .hero::after {
+            width: 260px;
+            height: 260px;
+            left: -90px;
+            bottom: -120px;
+            background: radial-gradient(circle, rgba(31, 111, 120, 0.16), transparent 65%);
         }
 
         .eyebrow {
-            display: inline-block;
-            padding: 6px 12px;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 8px 14px;
             border-radius: 999px;
             background: var(--accent-soft);
-            color: var(--accent);
-            font-size: 14px;
+            color: var(--accent-deep);
+            font-size: 13px;
+            font-weight: 800;
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+        }
+
+        .hero-layout {
+            display: grid;
+            grid-template-columns: minmax(0, 1.45fr) minmax(320px, 0.95fr);
+            gap: 24px;
+            position: relative;
+            z-index: 1;
+        }
+
+        .hero h1 {
+            margin: 18px 0 14px;
+            font-family: var(--serif);
+            font-size: clamp(2.4rem, 4vw, 4.5rem);
+            line-height: 0.95;
+            letter-spacing: -0.03em;
+        }
+
+        .hero p {
+            margin: 0;
+            max-width: 780px;
+            color: var(--muted);
+            font-size: 1.02rem;
+            line-height: 1.8;
+        }
+
+        .hero-actions {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 12px;
+            margin-top: 26px;
+        }
+
+        .button-link,
+        button {
+            appearance: none;
+            border: none;
+            cursor: pointer;
+            transition: transform 0.18s ease, box-shadow 0.18s ease, border-color 0.18s ease, background 0.18s ease;
+        }
+
+        .button-link {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 46px;
+            padding: 0 18px;
+            border-radius: 999px;
+            font-weight: 700;
+            font-size: 0.95rem;
+        }
+
+        .button-link.primary {
+            background: linear-gradient(135deg, var(--accent), var(--accent-deep));
+            color: white;
+            box-shadow: 0 18px 30px var(--accent-glow);
+        }
+
+        .button-link.swagger {
+            background: linear-gradient(135deg, #0f766e, #155e75);
+            color: white;
+            box-shadow: 0 20px 34px rgba(21, 94, 117, 0.22);
+        }
+
+        .button-link.secondary {
+            background: rgba(255, 255, 255, 0.76);
+            color: var(--ink);
+            border: 1px solid rgba(23, 32, 51, 0.12);
+        }
+
+        .button-link:hover,
+        button:hover {
+            transform: translateY(-1px);
+        }
+
+        .hero-sidebar {
+            display: grid;
+            gap: 14px;
+            align-content: start;
+        }
+
+        .link-card {
+            padding: 18px 18px 20px;
+            border-radius: 22px;
+            background: rgba(255, 255, 255, 0.78);
+        }
+
+        .link-card.swagger-focus {
+            position: relative;
+            background:
+                linear-gradient(145deg, rgba(15, 118, 110, 0.12), rgba(21, 94, 117, 0.08)),
+                rgba(255, 255, 255, 0.96);
+            border: 1px solid rgba(21, 94, 117, 0.18);
+            box-shadow: 0 24px 40px rgba(21, 94, 117, 0.14);
+        }
+
+        .link-card.swagger-focus::after {
+            content: "Primary Demo Route";
+            position: absolute;
+            top: 16px;
+            right: 16px;
+            padding: 5px 10px;
+            border-radius: 999px;
+            background: rgba(15, 118, 110, 0.12);
+            color: #0f766e;
+            font-size: 0.72rem;
+            font-weight: 800;
+            letter-spacing: 0.04em;
+            text-transform: uppercase;
+        }
+
+        .link-card .tag {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 5px 10px;
+            border-radius: 999px;
+            background: var(--secondary-soft);
+            color: var(--secondary);
+            font-size: 0.78rem;
+            font-weight: 800;
+            letter-spacing: 0.04em;
+            text-transform: uppercase;
+        }
+
+        .link-card h2 {
+            margin: 12px 0 8px;
+            font-size: 1.05rem;
+        }
+
+        .link-card p {
+            color: var(--muted);
+            line-height: 1.65;
+        }
+
+        .surface {
+            margin-top: 22px;
+            padding: 28px;
+            border-radius: var(--radius-xl);
+            background: var(--panel);
+        }
+
+        .section-head {
+            display: flex;
+            align-items: end;
+            justify-content: space-between;
+            gap: 18px;
+            margin-bottom: 18px;
+        }
+
+        .section-head h2 {
+            margin: 0;
+            font-size: 1.5rem;
+            font-family: var(--serif);
+        }
+
+        .section-head p {
+            margin: 0;
+            color: var(--muted);
+            max-width: 720px;
+            line-height: 1.7;
+        }
+
+        .swagger-callout {
+            margin-top: 18px;
+            padding: 18px 20px;
+            border-radius: 20px;
+            border: 1px solid rgba(21, 94, 117, 0.14);
+            background:
+                linear-gradient(135deg, rgba(15, 118, 110, 0.1), rgba(21, 94, 117, 0.08)),
+                rgba(255, 255, 255, 0.92);
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            justify-content: space-between;
+            gap: 14px;
+        }
+
+        .swagger-callout strong {
+            display: block;
+            margin-bottom: 6px;
+            font-size: 1rem;
+        }
+
+        .swagger-callout p {
+            margin: 0;
+            max-width: 680px;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(4, minmax(0, 1fr));
+            gap: 14px;
+            margin-top: 18px;
+        }
+
+        .stat-card {
+            padding: 18px;
+            border-radius: 22px;
+            background: var(--panel-strong);
+        }
+
+        .stat-card span {
+            display: block;
+            color: var(--muted);
+            font-size: 0.82rem;
             font-weight: 700;
             letter-spacing: 0.03em;
             text-transform: uppercase;
         }
 
-        h1 {
-            margin: 16px 0 12px;
-            font-size: clamp(2rem, 4vw, 3.5rem);
-            line-height: 1.05;
+        .stat-card strong {
+            display: block;
+            margin-top: 8px;
+            font-size: clamp(1.45rem, 2vw, 2.2rem);
+            line-height: 1;
+            font-family: var(--serif);
         }
 
-        h2 {
-            margin: 0 0 12px;
-            font-size: 1.2rem;
-        }
-
-        p {
-            margin: 0;
-            color: var(--muted);
-            line-height: 1.7;
-        }
-
-        .grid {
+        .studio-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+            grid-template-columns: minmax(0, 1.1fr) minmax(0, 0.9fr);
             gap: 18px;
-            margin-top: 24px;
-        }
-
-        .card {
-            padding: 22px;
-            border-radius: 18px;
-            background: white;
-            border: 1px solid var(--edge);
-        }
-
-        .card h2 {
-            margin-top: 12px;
-            margin-bottom: 10px;
-        }
-
-        .tag {
-            display: inline-block;
-            padding: 4px 10px;
-            border-radius: 999px;
-            background: #eef2ff;
-            color: #4338ca;
-            font-size: 0.8rem;
-            font-weight: 700;
-        }
-
-        a {
-            color: #0f4c81;
-            text-decoration: none;
-            font-weight: 600;
-        }
-
-        a:hover { text-decoration: underline; }
-
-        .panel {
-            padding: 28px 32px;
-        }
-
-        .endpoint-list {
-            display: grid;
-            gap: 12px;
             margin-top: 18px;
         }
 
-        .endpoint {
+        .console-stack,
+        .results-stack {
+            display: grid;
+            gap: 18px;
+        }
+
+        .console-card,
+        .results-panel {
+            padding: 22px;
+            border-radius: var(--radius-xl);
+            background: var(--panel-strong);
+        }
+
+        .console-card h3,
+        .results-panel h3 {
+            margin: 0 0 8px;
+            font-size: 1.08rem;
+        }
+
+        .console-card p,
+        .results-panel p {
+            margin: 0 0 16px;
+            color: var(--muted);
+            line-height: 1.65;
+        }
+
+        .form-grid {
+            display: grid;
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            gap: 12px;
+        }
+
+        .field {
+            display: grid;
+            gap: 7px;
+        }
+
+        .field.full {
+            grid-column: 1 / -1;
+        }
+
+        label {
+            font-size: 0.9rem;
+            font-weight: 700;
+            color: var(--ink);
+        }
+
+        input {
+            width: 100%;
+            min-height: 46px;
+            padding: 12px 14px;
+            border-radius: 14px;
+            border: 1px solid rgba(23, 32, 51, 0.12);
+            background: rgba(255, 255, 255, 0.92);
+            color: var(--ink);
+            font: inherit;
+            transition: border-color 0.18s ease, box-shadow 0.18s ease, background 0.18s ease;
+        }
+
+        input:focus {
+            outline: none;
+            border-color: rgba(189, 79, 46, 0.5);
+            box-shadow: 0 0 0 4px rgba(189, 79, 46, 0.1);
+            background: white;
+        }
+
+        button {
+            min-height: 48px;
+            padding: 0 18px;
+            border-radius: 14px;
+            font: inherit;
+            font-weight: 800;
+        }
+
+        .submit {
+            background: linear-gradient(135deg, var(--accent), var(--accent-deep));
+            color: white;
+            box-shadow: 0 18px 30px var(--accent-glow);
+        }
+
+        .ghost {
+            background: rgba(255, 255, 255, 0.88);
+            color: var(--ink);
+            border: 1px solid rgba(23, 32, 51, 0.12);
+        }
+
+        .button-row {
             display: flex;
             flex-wrap: wrap;
-            gap: 10px 14px;
+            gap: 10px;
+            margin-top: 14px;
+        }
+
+        .result-toolbar {
+            display: flex;
+            flex-wrap: wrap;
             align-items: center;
-            padding: 14px 16px;
-            border-radius: 14px;
-            background: #f8fafc;
-            border: 1px solid #e2e8f0;
+            justify-content: space-between;
+            gap: 12px;
+            margin-bottom: 14px;
         }
 
-        .method {
-            min-width: 70px;
-            padding: 5px 10px;
+        .status-pill {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            min-height: 36px;
+            padding: 0 14px;
             border-radius: 999px;
-            font-size: 0.8rem;
+            font-size: 0.88rem;
             font-weight: 700;
-            text-align: center;
-            color: white;
+            background: rgba(255, 255, 255, 0.84);
+            border: 1px solid rgba(23, 32, 51, 0.1);
+            color: var(--muted);
         }
 
-        .get { background: #0284c7; }
-        .post { background: #16a34a; }
-        .put { background: #d97706; }
-        .patch { background: #7c3aed; }
-        .delete { background: #dc2626; }
+        .status-pill.ok {
+            color: var(--ok);
+            background: rgba(31, 122, 82, 0.08);
+            border-color: rgba(31, 122, 82, 0.18);
+        }
 
-        code {
-            padding: 2px 6px;
-            border-radius: 8px;
-            background: #e2e8f0;
-            font-family: Consolas, monospace;
+        .status-pill.warn {
+            color: var(--warn);
+            background: rgba(154, 52, 18, 0.08);
+            border-color: rgba(154, 52, 18, 0.18);
+        }
+
+        .result-list {
+            display: grid;
+            gap: 12px;
+        }
+
+        .result-card {
+            padding: 18px;
+            border-radius: 18px;
+            border: 1px solid rgba(23, 32, 51, 0.08);
+            background: linear-gradient(145deg, rgba(255, 255, 255, 0.96), rgba(255, 248, 242, 0.96));
+        }
+
+        .result-card header {
+            display: flex;
+            flex-wrap: wrap;
+            align-items: start;
+            justify-content: space-between;
+            gap: 12px;
+        }
+
+        .result-card h4 {
+            margin: 0 0 6px;
+            font-size: 1.02rem;
+            line-height: 1.35;
+        }
+
+        .result-card .meta {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-top: 10px;
+        }
+
+        .chip {
+            display: inline-flex;
+            align-items: center;
+            min-height: 30px;
+            padding: 0 10px;
+            border-radius: 999px;
+            background: rgba(23, 32, 51, 0.06);
+            color: var(--ink);
+            font-size: 0.82rem;
+            font-weight: 700;
+        }
+
+        .chip.highlight {
+            background: var(--accent-soft);
+            color: var(--accent-deep);
+        }
+
+        .result-card p {
+            margin: 12px 0 0;
+            color: var(--muted);
+        }
+
+        .card-actions {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-top: 14px;
+        }
+
+        .small-button {
+            min-height: 38px;
+            padding: 0 12px;
+            border-radius: 12px;
+            font-size: 0.88rem;
+            font-weight: 800;
+        }
+
+        .small-button.use {
+            background: rgba(31, 111, 120, 0.12);
+            color: var(--secondary);
+            border: 1px solid rgba(31, 111, 120, 0.14);
+        }
+
+        .small-button.inspect {
+            background: rgba(189, 79, 46, 0.1);
+            color: var(--accent-deep);
+            border: 1px solid rgba(189, 79, 46, 0.14);
+        }
+
+        .json-panel {
+            margin-top: 16px;
+            padding: 16px;
+            border-radius: 18px;
+            background: #111827;
+            color: #e5eef8;
+            font-family: var(--mono);
+            font-size: 0.82rem;
+            line-height: 1.6;
+            overflow: auto;
+            min-height: 160px;
+            white-space: pre-wrap;
+            word-break: break-word;
+        }
+
+        .empty-state {
+            display: grid;
+            place-items: center;
+            min-height: 220px;
+            border: 1px dashed rgba(23, 32, 51, 0.18);
+            border-radius: 20px;
+            text-align: center;
+            padding: 20px;
+            color: var(--muted);
+            background: rgba(255, 255, 255, 0.4);
+        }
+
+        .loading {
+            animation: pulse 1.4s ease-in-out infinite;
+        }
+
+        @keyframes pulse {
+            0% { opacity: 0.55; }
+            50% { opacity: 1; }
+            100% { opacity: 0.55; }
+        }
+
+        @media (max-width: 1080px) {
+            .hero-layout,
+            .studio-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .stats-grid {
+                grid-template-columns: repeat(2, minmax(0, 1fr));
+            }
+        }
+
+        @media (max-width: 720px) {
+            .shell {
+                width: min(100% - 20px, 100%);
+                padding-top: 18px;
+            }
+
+            .hero,
+            .surface,
+            .console-card,
+            .results-panel,
+            .link-card,
+            .stat-card {
+                border-radius: 20px;
+            }
+
+            .hero,
+            .surface {
+                padding: 20px;
+            }
+
+            .form-grid,
+            .stats-grid {
+                grid-template-columns: 1fr;
+            }
         }
     </style>
 </head>
 <body>
     <div class="shell">
         <section class="hero">
-            <span class="eyebrow">Coursework API Demo</span>
-            <h1>Book API control panel</h1>
-            <p>
-                This Django REST Framework project provides a database-backed book catalogue
-                with full CRUD operations, filtering, genre recommendations, aggregate statistics,
-                Swagger documentation, and a browsable API for live demonstrations.
-            </p>
-            <div class="grid">
-                <article class="card">
-                    <span class="tag">Documentation</span>
-                    <h2><a href="/api/docs/swagger/">Swagger UI</a></h2>
-                    <p>Interactive API documentation generated from the live schema.</p>
+            <div class="hero-layout">
+                <div>
+                    <span class="eyebrow">Coursework Demo Studio</span>
+                    <h1>Search, Inspect, and Recommend Books Without Opening Swagger</h1>
+                    <p>
+                        This homepage now works as a live demonstration console for your Book API. You can
+                        search the imported dataset, inspect books by <code>bookid</code>, trigger weighted
+                        similarity recommendations, and still jump to Swagger, the browsable API, or Django
+                        admin whenever you need the raw endpoints.
+                    </p>
+                    <div class="hero-actions">
+                        <a class="button-link swagger" href="/api/docs/swagger/">Open Swagger UI</a>
+                        <a class="button-link primary" href="#api-studio">Open Demo Console</a>
+                    </div>
+                </div>
+
+                <div class="hero-sidebar">
+                    <article class="link-card swagger-focus">
+                        <span class="tag">Documentation</span>
+                        <h2><a href="/api/docs/swagger/">Swagger UI</a></h2>
+                        <p>Use this as the main examiner-facing documentation view. It exposes every route, schema, parameter, and live response format from the OpenAPI spec.</p>
+                    </article>
+                    <article class="link-card">
+                        <span class="tag">Administration</span>
+                        <h2><a href="/admin/">Django Admin</a></h2>
+                        <p>Review imported data, edit records manually, and manage the project through admin tools.</p>
+                    </article>
+                </div>
+            </div>
+        </section>
+
+        <section class="surface">
+            <div class="section-head">
+                <div>
+                    <h2>Live Dataset Snapshot</h2>
+                    <p>These cards read from your actual API, so they are useful during presentation when you want to show the current imported dataset at a glance.</p>
+                </div>
+            </div>
+
+            <div class="swagger-callout">
+                <div>
+                    <strong>Need the clearest API walkthrough?</strong>
+                    <p>Open <code>/api/docs/swagger/</code> first for endpoint-by-endpoint explanation, then return here to demonstrate the same functionality through the custom front-end.</p>
+                </div>
+                <a class="button-link swagger" href="/api/docs/swagger/">Launch Swagger UI</a>
+            </div>
+
+            <div class="stats-grid" id="stats-grid">
+                <article class="stat-card loading">
+                    <span>Total Books</span>
+                    <strong>Loading</strong>
                 </article>
-                <article class="card">
-                    <span class="tag">Browsable API</span>
-                    <h2><a href="/api/books/">Books endpoint</a></h2>
-                    <p>Use DRF's built-in interface to create, view, edit, and delete book records.</p>
+                <article class="stat-card loading">
+                    <span>Earliest Year</span>
+                    <strong>Loading</strong>
                 </article>
-                <article class="card">
-                    <span class="tag">Administration</span>
-                    <h2><a href="/admin/">Django admin</a></h2>
-                    <p>Manage the dataset through the admin dashboard with search and filtering.</p>
+                <article class="stat-card loading">
+                    <span>Latest Year</span>
+                    <strong>Loading</strong>
+                </article>
+                <article class="stat-card loading">
+                    <span>Main Genre</span>
+                    <strong>Loading</strong>
                 </article>
             </div>
         </section>
 
-        <section class="panel">
-            <h2>Key endpoints</h2>
-            <p>The project exposes the minimum CRUD routes plus richer query and recommendation endpoints for the coursework demonstration.</p>
-            <div class="endpoint-list">
-                <div class="endpoint"><span class="method get">GET</span> <code>/api/books/</code> List all books, optionally filtered by <code>genre</code>, <code>author</code>, <code>published_year</code>, <code>search</code>, and <code>ordering</code>.</div>
-                <div class="endpoint"><span class="method post">POST</span> <code>/api/books/</code> Create a new book.</div>
-                <div class="endpoint"><span class="method get">GET</span> <code>/api/books/{id}/</code> Retrieve one book by ID.</div>
-                <div class="endpoint"><span class="method put">PUT</span> <code>/api/books/{id}/</code> Replace a book record.</div>
-                <div class="endpoint"><span class="method delete">DELETE</span> <code>/api/books/{id}/</code> Delete a book.</div>
-                <div class="endpoint"><span class="method get">GET</span> <code>/api/books/?genre=Fantasy</code> Filter books by genre in the main collection endpoint.</div>
-                <div class="endpoint"><span class="method get">GET</span> <code>/api/books/stats/</code> Return collection-wide summary statistics.</div>
-                <div class="endpoint"><span class="method get">GET</span> <code>/api/books/recommendations/?genre=Science%20Fiction&amp;limit=5</code> Return up to the requested number of matching recommendations from the public dataset.</div>
-                <div class="endpoint"><span class="method get">GET</span> <code>/api/schema/</code> OpenAPI schema in JSON format.</div>
+        <section class="surface" id="api-studio">
+            <div class="section-head">
+                <div>
+                    <h2>API Studio</h2>
+                    <p>Use this front-end control panel for oral demonstration. Search the dataset, fetch a book by <code>bookid</code>, and turn any result into a recommendation seed with one click.</p>
+                </div>
+            </div>
+
+            <div class="studio-grid">
+                <div class="console-stack">
+                    <article class="console-card">
+                        <h3>Search Books</h3>
+                        <p>Calls <code>/api/books/search/</code> with title-first search controls and returns rating-ranked results.</p>
+                        <form id="search-form">
+                            <div class="form-grid">
+                                <div class="field full">
+                                    <label for="search-title">Title</label>
+                                    <input id="search-title" name="title" type="text" placeholder="Harry Potter">
+                                </div>
+                                <div class="field">
+                                    <label for="search-author">Author</label>
+                                    <input id="search-author" name="author" type="text" placeholder="J.K. Rowling">
+                                </div>
+                                <div class="field">
+                                    <label for="search-publisher">Publisher</label>
+                                    <input id="search-publisher" name="publisher" type="text" placeholder="Scholastic">
+                                </div>
+                                <div class="field">
+                                    <label for="search-language">Language</label>
+                                    <input id="search-language" name="language" type="text" placeholder="eng">
+                                </div>
+                                <div class="field">
+                                    <label for="search-rating">Minimum Rating</label>
+                                    <input id="search-rating" name="min_rating" type="number" min="0" max="5" step="0.1" placeholder="4.5">
+                                </div>
+                                <div class="field">
+                                    <label for="search-limit">Limit</label>
+                                    <input id="search-limit" name="limit" type="number" min="1" max="20" value="5">
+                                </div>
+                            </div>
+                            <div class="button-row">
+                                <button class="submit" type="submit">Run Search</button>
+                                <button class="ghost" type="button" id="search-demo">Load Demo Query</button>
+                            </div>
+                        </form>
+                    </article>
+
+                    <article class="console-card">
+                        <h3>Recommend Similar Books</h3>
+                        <p>Calls <code>/api/books/recommendations/similar/</code> using a seed <code>bookid</code> and your weighted recommendation algorithm.</p>
+                        <form id="recommend-form">
+                            <div class="form-grid">
+                                <div class="field">
+                                    <label for="recommend-bookid">Seed BookID</label>
+                                    <input id="recommend-bookid" name="bookid" type="number" min="1" placeholder="1">
+                                </div>
+                                <div class="field">
+                                    <label for="recommend-limit">Limit</label>
+                                    <input id="recommend-limit" name="limit" type="number" min="1" max="20" value="5">
+                                </div>
+                            </div>
+                            <div class="button-row">
+                                <button class="submit" type="submit">Get Recommendations</button>
+                                <button class="ghost" type="button" id="recommend-demo">Use Demo Seed</button>
+                            </div>
+                        </form>
+                    </article>
+
+                    <article class="console-card">
+                        <h3>Lookup by BookID</h3>
+                        <p>Calls <code>/api/books/by-bookid/&lt;bookid&gt;/</code> so you can inspect a single record cleanly during a live demo.</p>
+                        <form id="lookup-form">
+                            <div class="form-grid">
+                                <div class="field full">
+                                    <label for="lookup-bookid">BookID</label>
+                                    <input id="lookup-bookid" name="bookid" type="number" min="1" placeholder="1">
+                                </div>
+                            </div>
+                            <div class="button-row">
+                                <button class="submit" type="submit">Inspect Book</button>
+                                <button class="ghost" type="button" id="lookup-demo">Open BookID 1</button>
+                            </div>
+                        </form>
+                    </article>
+                </div>
+
+                <div class="results-stack">
+                    <article class="results-panel">
+                        <div class="result-toolbar">
+                            <div>
+                                <h3>Result Viewer</h3>
+                                <p>The cards below are generated live from your own API responses.</p>
+                            </div>
+                            <span class="status-pill" id="result-status">Ready for demo</span>
+                        </div>
+                        <div class="result-list" id="result-list">
+                            <div class="empty-state">
+                                <div>
+                                    <strong>Nothing has been queried yet.</strong>
+                                    <p>Run a search, inspect a book, or generate recommendations to populate this panel.</p>
+                                </div>
+                            </div>
+                        </div>
+                    </article>
+
+                    <article class="results-panel">
+                        <h3>Raw JSON Response</h3>
+                        <p>This makes it easy to show your underlying API output during assessment without jumping into Swagger.</p>
+                        <div class="json-panel" id="json-panel">{
+  "message": "Run a search, lookup, or recommendation request to inspect the live API response."
+}</div>
+                    </article>
+                </div>
             </div>
         </section>
     </div>
+
+    <script>
+        const resultList = document.getElementById("result-list");
+        const resultStatus = document.getElementById("result-status");
+        const jsonPanel = document.getElementById("json-panel");
+        const statsGrid = document.getElementById("stats-grid");
+        const recommendBookIdInput = document.getElementById("recommend-bookid");
+        const lookupBookIdInput = document.getElementById("lookup-bookid");
+
+        function setStatus(text, kind) {
+            resultStatus.textContent = text;
+            resultStatus.className = "status-pill" + (kind ? " " + kind : "");
+        }
+
+        function setJsonPanel(payload) {
+            jsonPanel.textContent = typeof payload === "string" ? payload : JSON.stringify(payload, null, 2);
+        }
+
+        function buildQuery(formData) {
+            const params = new URLSearchParams();
+            for (const [key, value] of formData.entries()) {
+                if (value !== null && value !== undefined && String(value).trim() !== "") {
+                    params.set(key, String(value).trim());
+                }
+            }
+            return params.toString();
+        }
+
+        function renderEmpty(message, note) {
+            resultList.innerHTML = `
+                <div class="empty-state">
+                    <div>
+                        <strong>${message}</strong>
+                        <p>${note}</p>
+                    </div>
+                </div>
+            `;
+        }
+
+        function createMetaChip(label, value, highlight = false) {
+            if (value === null || value === undefined || value === "") {
+                return "";
+            }
+            const safeValue = String(value);
+            return `<span class="chip${highlight ? " highlight" : ""}">${label}: ${safeValue}</span>`;
+        }
+
+        function createActionButtons(book) {
+            const bookid = book.bookid || "";
+            return `
+                <div class="card-actions">
+                    <button class="small-button use" type="button" data-action="seed" data-bookid="${bookid}">Use as Seed</button>
+                    <button class="small-button inspect" type="button" data-action="inspect" data-bookid="${bookid}">Inspect Book</button>
+                </div>
+            `;
+        }
+
+        function renderBooks(books, modeLabel) {
+            if (!Array.isArray(books) || books.length === 0) {
+                renderEmpty("No books matched this request.", "Try loosening the query, changing the seed book, or using a different language or rating threshold.");
+                return;
+            }
+
+            resultList.innerHTML = books.map((book) => {
+                const summary = book.match_summary || book.reason || "Live API result";
+                const score = book.similarity_score !== undefined ? createMetaChip("Similarity", book.similarity_score, true) : "";
+                return `
+                    <article class="result-card">
+                        <header>
+                            <div>
+                                <h4>${book.title}</h4>
+                                <div class="meta">
+                                    ${createMetaChip("BookID", book.bookid, true)}
+                                    ${createMetaChip("Author", book.author)}
+                                    ${createMetaChip("Publisher", book.publisher)}
+                                    ${createMetaChip("Language", book.language)}
+                                    ${createMetaChip("Year", book.published_year)}
+                                    ${createMetaChip("Rating", book.average_rating)}
+                                    ${createMetaChip("Ratings", book.ratings_count)}
+                                    ${score}
+                                </div>
+                            </div>
+                        </header>
+                        <p><strong>${modeLabel}:</strong> ${summary}</p>
+                        ${createActionButtons(book)}
+                    </article>
+                `;
+            }).join("");
+        }
+
+        function renderSingleBook(book) {
+            resultList.innerHTML = `
+                <article class="result-card">
+                    <header>
+                        <div>
+                            <h4>${book.title}</h4>
+                            <div class="meta">
+                                ${createMetaChip("BookID", book.bookid, true)}
+                                ${createMetaChip("Database ID", book.id)}
+                                ${createMetaChip("Author", book.author)}
+                                ${createMetaChip("Publisher", book.publisher)}
+                                ${createMetaChip("Language", book.language)}
+                                ${createMetaChip("Genre", book.genre)}
+                                ${createMetaChip("Year", book.published_year)}
+                                ${createMetaChip("Rating", book.average_rating)}
+                                ${createMetaChip("Ratings", book.ratings_count)}
+                            </div>
+                        </div>
+                    </header>
+                    <p>${book.description || "This record has no stored description in the current imported dataset."}</p>
+                    ${createActionButtons(book)}
+                </article>
+            `;
+        }
+
+        async function fetchJson(url) {
+            const response = await fetch(url, {
+                headers: {
+                    "Accept": "application/json"
+                }
+            });
+
+            const isJson = (response.headers.get("content-type") || "").includes("application/json");
+            const payload = isJson ? await response.json() : await response.text();
+
+            if (!response.ok) {
+                const detail = typeof payload === "string" ? payload : JSON.stringify(payload);
+                throw new Error(detail || `Request failed with status ${response.status}`);
+            }
+
+            return payload;
+        }
+
+        async function runSearch(form) {
+            const query = buildQuery(new FormData(form));
+            const endpoint = `/api/books/search/${query ? "?" + query : ""}`;
+            setStatus("Running search...", "ok");
+            setJsonPanel({ endpoint });
+            try {
+                const payload = await fetchJson(endpoint);
+                setStatus(`Loaded ${payload.length} search result(s)`, "ok");
+                renderBooks(payload, "Search");
+                setJsonPanel(payload);
+            } catch (error) {
+                setStatus("Search failed", "warn");
+                renderEmpty("Search request failed.", error.message);
+                setJsonPanel({ error: error.message, endpoint });
+            }
+        }
+
+        async function runRecommendation(form) {
+            const query = buildQuery(new FormData(form));
+            const endpoint = `/api/books/recommendations/similar/${query ? "?" + query : ""}`;
+            setStatus("Generating recommendations...", "ok");
+            setJsonPanel({ endpoint });
+            try {
+                const payload = await fetchJson(endpoint);
+                setStatus(`Loaded ${payload.length} recommendation(s)`, "ok");
+                renderBooks(payload, "Recommendation");
+                setJsonPanel(payload);
+            } catch (error) {
+                setStatus("Recommendation failed", "warn");
+                renderEmpty("Recommendation request failed.", error.message);
+                setJsonPanel({ error: error.message, endpoint });
+            }
+        }
+
+        async function runLookup(form) {
+            const formData = new FormData(form);
+            const bookid = (formData.get("bookid") || "").toString().trim();
+            if (!bookid) {
+                setStatus("Book lookup needs a bookid", "warn");
+                renderEmpty("Book lookup requires a bookid.", "Enter a sequential bookid, for example 1, then try again.");
+                return;
+            }
+            const endpoint = `/api/books/by-bookid/${bookid}/`;
+            setStatus("Loading book record...", "ok");
+            setJsonPanel({ endpoint });
+            try {
+                const payload = await fetchJson(endpoint);
+                setStatus(`Loaded BookID ${payload.bookid}`, "ok");
+                renderSingleBook(payload);
+                setJsonPanel(payload);
+            } catch (error) {
+                setStatus("Lookup failed", "warn");
+                renderEmpty("Book lookup failed.", error.message);
+                setJsonPanel({ error: error.message, endpoint });
+            }
+        }
+
+        function loadDemoSearch() {
+            document.getElementById("search-title").value = "Harry Potter";
+            document.getElementById("search-author").value = "J.K. Rowling";
+            document.getElementById("search-publisher").value = "";
+            document.getElementById("search-language").value = "eng";
+            document.getElementById("search-rating").value = "4.5";
+            document.getElementById("search-limit").value = "5";
+        }
+
+        function loadDemoRecommendation() {
+            recommendBookIdInput.value = "1";
+            document.getElementById("recommend-limit").value = "5";
+        }
+
+        function loadDemoLookup() {
+            lookupBookIdInput.value = "1";
+        }
+
+        async function loadStats() {
+            try {
+                const payload = await fetchJson("/api/books/stats/");
+                const genreEntries = Object.entries(payload.genres || {}).sort((left, right) => right[1] - left[1]);
+                const topGenre = genreEntries.length ? `${genreEntries[0][0]} (${genreEntries[0][1]})` : "Unavailable";
+                statsGrid.innerHTML = `
+                    <article class="stat-card">
+                        <span>Total Books</span>
+                        <strong>${payload.total_books ?? "N/A"}</strong>
+                    </article>
+                    <article class="stat-card">
+                        <span>Earliest Year</span>
+                        <strong>${payload.earliest_published_year ?? "N/A"}</strong>
+                    </article>
+                    <article class="stat-card">
+                        <span>Latest Year</span>
+                        <strong>${payload.latest_published_year ?? "N/A"}</strong>
+                    </article>
+                    <article class="stat-card">
+                        <span>Main Genre</span>
+                        <strong>${topGenre}</strong>
+                    </article>
+                `;
+            } catch (error) {
+                statsGrid.innerHTML = `
+                    <article class="stat-card">
+                        <span>Status</span>
+                        <strong>Stats unavailable</strong>
+                    </article>
+                    <article class="stat-card">
+                        <span>Error</span>
+                        <strong style="font-size:1rem; line-height:1.3;">${error.message}</strong>
+                    </article>
+                `;
+            }
+        }
+
+        document.getElementById("search-form").addEventListener("submit", (event) => {
+            event.preventDefault();
+            runSearch(event.currentTarget);
+        });
+
+        document.getElementById("recommend-form").addEventListener("submit", (event) => {
+            event.preventDefault();
+            runRecommendation(event.currentTarget);
+        });
+
+        document.getElementById("lookup-form").addEventListener("submit", (event) => {
+            event.preventDefault();
+            runLookup(event.currentTarget);
+        });
+
+        document.getElementById("search-demo").addEventListener("click", () => {
+            loadDemoSearch();
+            runSearch(document.getElementById("search-form"));
+        });
+
+        document.getElementById("recommend-demo").addEventListener("click", () => {
+            loadDemoRecommendation();
+            runRecommendation(document.getElementById("recommend-form"));
+        });
+
+        document.getElementById("lookup-demo").addEventListener("click", () => {
+            loadDemoLookup();
+            runLookup(document.getElementById("lookup-form"));
+        });
+
+        resultList.addEventListener("click", (event) => {
+            const button = event.target.closest("button[data-action]");
+            if (!button) {
+                return;
+            }
+            const bookid = button.dataset.bookid;
+            if (!bookid) {
+                return;
+            }
+            if (button.dataset.action === "seed") {
+                recommendBookIdInput.value = bookid;
+                setStatus(`BookID ${bookid} copied into recommendation seed`, "ok");
+                document.getElementById("api-studio").scrollIntoView({ behavior: "smooth", block: "start" });
+                return;
+            }
+            if (button.dataset.action === "inspect") {
+                lookupBookIdInput.value = bookid;
+                runLookup(document.getElementById("lookup-form"));
+            }
+        });
+
+        loadStats();
+        loadDemoSearch();
+    </script>
 </body>
 </html>
