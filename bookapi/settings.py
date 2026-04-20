@@ -152,6 +152,7 @@ SPECTACULAR_SETTINGS = {
     'DESCRIPTION': 'A coursework-ready Django REST API for managing and exploring books.',
     'VERSION': '1.0.0',
     'SERVE_INCLUDE_SCHEMA': False,
+    'SORT_OPERATION_PARAMETERS': False,
     'SWAGGER_UI_DIST': 'SIDECAR',
     'SWAGGER_UI_FAVICON_HREF': 'SIDECAR',
     'REDOC_DIST': 'SIDECAR',
