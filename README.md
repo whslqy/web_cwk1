@@ -69,19 +69,14 @@ python manage.py runserver
 ## Main URLs
 
 - Home page: `http://localhost:8000/`
-- Browsable API: `http://localhost:8000/api/books/`
-- Retrieve by bookid: `http://localhost:8000/api/books/by-bookid/1/`
 - Swagger UI: `http://localhost:8000/api/docs/swagger/`
-- ReDoc: `http://localhost:8000/api/docs/redoc/`
-- OpenAPI schema: `http://localhost:8000/api/schema/`
-- Admin: `http://localhost:8000/admin/`
 - Deployed home page: `https://whslqy.pythonanywhere.com/`
 - Deployed Swagger UI: `https://whslqy.pythonanywhere.com/api/docs/swagger/`
 
 ## API documentation
 
 - Manual documentation: `api_docs.md`
-- Submission-ready PDF: `api_docs.pdf`
+- PDF: `api_docs.pdf`（`https://github.com/whslqy/web_cwk1`）
 - Interactive documentation: Swagger UI at `/api/docs/swagger/`
 
 ## Authentication behaviour
